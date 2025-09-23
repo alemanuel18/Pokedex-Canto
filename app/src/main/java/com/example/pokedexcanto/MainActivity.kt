@@ -23,8 +23,11 @@ import com.example.pokedexcanto.ui.screens.PokemonListScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
-            PokemonApp()
+            PokedexCantoTheme {
+                PokemonApp()
+            }
         }
     }
 }
@@ -46,8 +49,10 @@ fun PokemonApp() {
         }
 
         composable(
-            "pokemon_detail/{pokemonId}",
-            arguments = listOf(navArgument("pokemonId") { type = NavType.IntType })
+            route = "pokemon_detail/{pokemonId}",
+            arguments = listOf(navArgument("pokemonId") {
+                type = NavType.IntType
+            })
         ) { backStackEntry ->
             val pokemonId = backStackEntry.arguments?.getInt("pokemonId") ?: 1
             PokemonDetailScreen(
