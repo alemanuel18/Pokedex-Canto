@@ -17,6 +17,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.pokedexcanto.data.PokemonListItem
 import com.example.pokedexcanto.ui.viewmodels.PokemonListViewModel
+import androidx.compose.ui.res.stringResource
+import com.example.pokedexcanto.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,7 +33,7 @@ fun PokemonListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pokédex") },
+                title = { Text(stringResource(R.string.pokedex_title)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary

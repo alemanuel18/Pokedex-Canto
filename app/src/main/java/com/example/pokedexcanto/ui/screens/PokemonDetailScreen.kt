@@ -21,6 +21,8 @@ import coil.compose.AsyncImage
 import com.example.pokedexcanto.data.PokemonDetail
 import com.example.pokedexcanto.data.PokemonStat
 import com.example.pokedexcanto.ui.viewmodels.PokemonDetailViewModel
+import androidx.compose.ui.res.stringResource
+import com.example.pokedexcanto.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,7 +110,7 @@ fun PokemonImagesSection(pokemon: PokemonDetail) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Imágenes",
+                text = stringResource(R.string.images_section_title),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
@@ -122,11 +124,11 @@ fun PokemonImagesSection(pokemon: PokemonDetail) {
             ) {
                 ImageWithLabel(
                     imageUrl = pokemon.sprites.front_default,
-                    label = "Frente"
+                    label = stringResource(R.string.image_front)
                 )
                 ImageWithLabel(
                     imageUrl = pokemon.sprites.back_default,
-                    label = "Atrás"
+                    label = stringResource(R.string.image_back)
                 )
             }
 
@@ -139,11 +141,11 @@ fun PokemonImagesSection(pokemon: PokemonDetail) {
             ) {
                 ImageWithLabel(
                     imageUrl = pokemon.sprites.front_shiny,
-                    label = "Frente Shiny"
+                    label = stringResource(R.string.image_front_shiny)
                 )
                 ImageWithLabel(
                     imageUrl = pokemon.sprites.back_shiny,
-                    label = "Atrás Shiny"
+                    label = stringResource(R.string.image_back_shiny)
                 )
             }
         }
@@ -185,18 +187,18 @@ fun BasicInfoSection(pokemon: PokemonDetail) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Información Básica",
+                text = stringResource(R.string.basic_info_section_title),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            InfoRow("Nombre", pokemon.name.replaceFirstChar { it.uppercase() })
-            InfoRow("Número", "#${pokemon.id.toString().padStart(3, '0')}")
-            InfoRow("Altura", "${pokemon.height / 10.0} m")
-            InfoRow("Peso", "${pokemon.weight / 10.0} kg")
-            InfoRow("Tipos", pokemon.types.joinToString(", ") {
+            InfoRow(stringResource(R.string.info_name), pokemon.name.replaceFirstChar { it.uppercase() })
+            InfoRow(stringResource(R.string.info_number), "#${pokemon.id.toString().padStart(3, '0')}")
+            InfoRow(stringResource(R.string.info_height), "${pokemon.height / 10.0} m")
+            InfoRow(stringResource(R.string.info_weight), "${pokemon.weight / 10.0} kg")
+            InfoRow(stringResource(R.string.info_types), pokemon.types.joinToString(", ") {
                 it.type.name.replaceFirstChar { char -> char.uppercase() }
             })
         }
@@ -214,7 +216,7 @@ fun WeaknessesSection(weaknesses: List<String>) {
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Debilidades",
+                    text = stringResource(R.string.weaknesses_section_title),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
@@ -242,7 +244,7 @@ fun StatsSection(stats: List<PokemonStat>) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Estadísticas",
+                text = stringResource(R.string.stats_section_title),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )

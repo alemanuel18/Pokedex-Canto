@@ -1,3 +1,31 @@
 <resources>
     <string name="app_name">PokedexCanto</string>
+
+    <string name="pokedex_title">Pokédex</string>
+
+    <string name="images_section_title">Imágenes</string>
+    <string name="basic_info_section_title">Información Básica</string>
+    <string name="weaknesses_section_title">Debilidades</string>
+    <string name="stats_section_title">Estadísticas</string>
+
+    <string name="image_front">Frente</string>
+    <string name="image_back">Atrás</string>
+    <string name="image_front_shiny">Frente Shiny</string>
+    <string name="image_back_shiny">Atrás Shiny</string>
+
+    <string name="info_name">Nombre</string>
+    <string name="info_number">Número</string>
+    <string name="info_height">Altura</string>
+    <string name="info_weight">Peso</string>
+    <string name="info_types">Tipos</string>
+
+    <string name="height_unit">%1$.1f m</string>
+    <string name="weight_unit">%1$.1f kg</string>
+
+    <string name="stat_hp">Ps</string>
+    <string name="stat_attack">Ataque</string>
+    <string name="stat_defense">Defensa</string>
+    <string name="stat_special_attack">At. Especial</string>
+    <string name="stat_special_defense">Def. Especial</string>
+    <string name="stat_speed">Velocidad</string>
 </resources>
