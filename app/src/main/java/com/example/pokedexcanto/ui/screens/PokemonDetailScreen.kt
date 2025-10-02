@@ -31,9 +31,7 @@ fun PokemonDetailScreen(
     onBackClick: () -> Unit,
     viewModel: PokemonDetailViewModel = viewModel()
 ) {
-    val pokemon by viewModel.pokemonDetail
-    val weaknesses by viewModel.weaknesses
-    val isLoading by viewModel.isLoading
+    val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(pokemonId) {
         viewModel.loadPokemon(pokemonId)
@@ -41,7 +39,7 @@ fun PokemonDetailScreen(
 
     Scaffold(
         topBar = {
-            pokemon?.let { poke ->
+            uiState.pokemon?.let { poke ->
                 TopAppBar(
                     title = {
                         Column {
@@ -64,36 +62,72 @@ fun PokemonDetailScreen(
                     )
                 )
             }
+        },
+        snackbarHost = {
+            uiState.errorMessage?.let { error ->
+                Snackbar(
+                    modifier = Modifier.padding(16.dp),
+                    action = {
+                        TextButton(onClick = { viewModel.clearError() }) {
+                            Text("OK")
+                        }
+                    }
+                ) {
+                    Text(error)
+                }
+            }
         }
     ) { paddingValues ->
-        if (isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            pokemon?.let { poke ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .verticalScroll(rememberScrollState())
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    // Imágenes del Pokémon
-                    PokemonImagesSection(pokemon = poke)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            when {
+                uiState.isLoading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+                uiState.errorMessage != null && uiState.pokemon == null -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = uiState.errorMessage ?: "Error desconocido",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(onClick = { viewModel.loadPokemon(pokemonId) }) {
+                            Text("Reintentar")
+                        }
+                    }
+                }
+                uiState.pokemon != null -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        // Imágenes del Pokémon
+                        PokemonImagesSection(pokemon = uiState.pokemon!!)
 
-                    // Información básica
-                    BasicInfoSection(pokemon = poke)
+                        // Información básica
+                        BasicInfoSection(pokemon = uiState.pokemon!!)
 
-                    // Debilidades
-                    WeaknessesSection(weaknesses = weaknesses)
+                        // Debilidades
+                        WeaknessesSection(weaknesses = uiState.weaknesses)
 
-                    // Estadísticas
-                    StatsSection(stats = poke.stats)
+                        // Estadísticas
+                        StatsSection(stats = uiState.pokemon!!.stats)
+                    }
                 }
             }
         }
@@ -277,7 +311,7 @@ fun StatBar(
         }
 
         LinearProgressIndicator(
-            progress = (statValue / 255f).coerceAtMost(1f),
+            progress = { (statValue / 255f).coerceAtMost(1f) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(8.dp)
