@@ -1,39 +1,68 @@
 package com.example.pokedexcanto.ui.viewmodels
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.State
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedexcanto.data.PokemonDetail
 import com.example.pokedexcanto.data.PokemonRepository
+import com.example.pokedexcanto.data.Result
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+
+data class PokemonDetailUiState(
+    val pokemon: PokemonDetail? = null,
+    val weaknesses: List<String> = emptyList(),
+    val isLoading: Boolean = true,
+    val errorMessage: String? = null
+)
 
 class PokemonDetailViewModel : ViewModel() {
     private val repository = PokemonRepository()
 
-    private val _pokemonDetail = mutableStateOf<PokemonDetail?>(null)
-    val pokemonDetail: State<PokemonDetail?> = _pokemonDetail
-
-    private val _weaknesses = mutableStateOf<List<String>>(emptyList())
-    val weaknesses: State<List<String>> = _weaknesses
-
-    private val _isLoading = mutableStateOf(true)
-    val isLoading: State<Boolean> = _isLoading
+    private val _uiState = MutableStateFlow(PokemonDetailUiState())
+    val uiState: StateFlow<PokemonDetailUiState> = _uiState.asStateFlow()
 
     fun loadPokemon(pokemonId: Int) {
         viewModelScope.launch {
-            try {
-                _isLoading.value = true
-                val pokemon = repository.getPokemonDetail(pokemonId)
-                _pokemonDetail.value = pokemon
+            _uiState.value = PokemonDetailUiState(isLoading = true)
 
-                // Cargar debilidades
-                val types = pokemon.types.map { it.type.name }
-                _weaknesses.value = repository.getPokemonWeaknesses(types)
-            } catch (e: Exception) {
-                // Manejar error
-            } finally {
-                _isLoading.value = false
+            when (val result = repository.getPokemonDetail(pokemonId)) {
+                is Result.Success -> {
+                    val pokemon = result.data
+                    _uiState.value = _uiState.value.copy(
+                        pokemon = pokemon,
+                        isLoading = false
+                    )
+
+                    // Cargar debilidades
+                    loadWeaknesses(pokemon.types.map { it.type.name })
+                }
+                is Result.Error -> {
+                    _uiState.value = PokemonDetailUiState(
+                        isLoading = false,
+                        errorMessage = "Error al cargar el Pokémon: ${result.exception.message}"
+                    )
+                }
             }
         }
+    }
+
+    private suspend fun loadWeaknesses(types: List<String>) {
+        when (val result = repository.getPokemonWeaknesses(types)) {
+            is Result.Success -> {
+                _uiState.value = _uiState.value.copy(weaknesses = result.data)
+            }
+            is Result.Error -> {
+                // No actualizamos el error aquí para no sobrescribir el pokemon cargado
+                _uiState.value = _uiState.value.copy(
+                    weaknesses = emptyList()
+                )
+            }
+        }
+    }
+
+    fun clearError() {
+        _uiState.value = _uiState.value.copy(errorMessage = null)
     }
 }
